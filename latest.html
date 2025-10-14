@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Eclipse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-link-underline { position: relative; }
+        .nav-link-underline::after {
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: -3px; left: 0; background-color: #2563eb;
+            transition: width 0.3s ease-in-out;
+        }
+        .nav-link-underline:hover::after { width: 100%; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+
+        .wrapper { display: inline-flex; list-style: none; padding: 0; }
+        .wrapper .icon {
+            position: relative; background: #ffffff; border-radius: 50%;
+            padding: 15px; margin: 10px; width: 50px; height: 50px;
+            font-size: 18px; display: flex; justify-content: center;
+            align-items: center; flex-direction: column;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1); cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .wrapper .tooltip {
+            position: absolute; top: 0; font-size: 14px; background: #ffffff;
+            color: #ffffff; padding: 5px 8px; border-radius: 5px;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1); opacity: 0;
+            pointer-events: none; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .wrapper .icon:hover .tooltip { top: -45px; opacity: 1; visibility: visible; pointer-events: auto; }
+        .wrapper .icon:hover span, .wrapper .icon:hover .tooltip { text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.1); }
+        .wrapper .facebook:hover, .wrapper .facebook:hover .tooltip, .wrapper .facebook:hover .tooltip::before { background: #1877F2; color: #ffffff; }
+        .wrapper .twitter:hover, .wrapper .twitter:hover .tooltip, .wrapper .twitter:hover .tooltip::before { background: #1DA1F2; color: #ffffff; }
+        .wrapper .instagram:hover, .wrapper .instagram:hover .tooltip, .wrapper .instagram:hover .tooltip::before { background: #E4405F; color: #ffffff; }
+        .wrapper .icon svg { width: 24px; height: 24px; fill: #333; transition: all 0.2s; }
+        .wrapper .icon:hover svg { fill: #fff; }
+        
+        .switch { font-size: 13px; position: relative; display: inline-block; width: 4em; height: 2.2em; border-radius: 30px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2a2a2a; transition: 0.4s; border-radius: 30px; overflow: hidden; }
+        .slider:before { position: absolute; content: ""; height: 1.2em; width: 1.2em; border-radius: 20px; left: 0.5em; bottom: 0.5em; transition: 0.4s; transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5); box-shadow: inset 8px -4px 0px 0px #fff; }
+        .switch input:checked + .slider { background-color: #00a6ff; }
+        .switch input:checked + .slider:before { transform: translateX(1.8em); box-shadow: inset 15px -4px 0px 15px #ffcf48; }
+        .star { background-color: #fff; border-radius: 50%; position: absolute; width: 5px; transition: all 0.4s; height: 5px; }
+        .star_1 { left: 2.5em; top: 0.5em; }
+        .star_2 { left: 2.2em; top: 1.2em; }
+        .star_3 { left: 3em; top: 0.9em; }
+        .switch input:checked ~ .slider .star { opacity: 0; }
+        .cloud { width: 3.5em; position: absolute; bottom: -1.4em; left: -1.1em; opacity: 0; transition: all 0.4s; }
+        .switch input:checked ~ .slider .cloud { opacity: 1; }
+        
+        .loader-container { --bg-color: transparent; display: flex; justify-content: center; padding: 1rem 0; }
+        .loader {
+            color: #FFF;
+            font-weight: 500;
+            font-size: 25px;
+            -webkit-box-sizing: content-box;
+            box-sizing: content-box;
+            height: 40px;
+            padding: 10px 10px;
+            display: flex;
+            border-radius: 8px;
+        }
+        .words { overflow: hidden; position: relative; }
+        .words::after { content: ""; position: absolute; inset: 0; background: linear-gradient( var(--bg-color) 10%, transparent 30%, transparent 70%, var(--bg-color) 90% ); z-index: 20; }
+        
+        .word {
+          display: block;
+          height: 100%;
+          padding-left: 6px;
+          color: #956afa;
+          animation: spin_4991 4s infinite;
+        }
+
+        @keyframes spin_4991 {
+          10% {
+            -webkit-transform: translateY(-102%);
+            transform: translateY(-102%);
+          }
+        
+          25% {
+            -webkit-transform: translateY(-100%);
+            transform: translateY(-100%);
+          }
+        
+          35% {
+            -webkit-transform: translateY(-202%);
+            transform: translateY(-202%);
+          }
+        
+          50% {
+            -webkit-transform: translateY(-200%);
+            transform: translateY(-200%);
+          }
+        
+          60% {
+            -webkit-transform: translateY(-302%);
+            transform: translateY(-302%);
+          }
+        
+          75% {
+            -webkit-transform: translateY(-300%);
+            transform: translateY(-300%);
+          }
+        
+          85% {
+            -webkit-transform: translateY(-402%);
+            transform: translateY(-402%);
+          }
+        
+          100% {
+            -webkit-transform: translateY(-400%);
+            transform: translateY(-400%);
+          }
+        }
+
+        .glowing-button {
+            position: relative; padding: 8px 16px; border-radius: 7px; border: 1px solid rgb(61, 106, 255);
+            font-size: 14px; text-transform: uppercase; font-weight: 600; letter-spacing: 1.5px;
+            background: transparent; color: rgb(61, 106, 255); overflow: hidden;
+            box-shadow: 0 0 0 0 transparent; transition: all 0.2s ease-in;
+        }
+        .dark .glowing-button { color: #fff; }
+        .glowing-button:hover {
+            background: rgb(61, 106, 255); color: #fff; box-shadow: 0 0 30px 5px rgba(0, 142, 236, 0.815);
+            transition: all 0.2s ease-out;
+        }
+        .glowing-button:hover::before { animation: sh02 0.5s 0s linear; }
+        .glowing-button::before {
+            content: ''; display: block; width: 0px; height: 86%; position: absolute;
+            top: 7%; left: 0%; opacity: 0; background: #fff; box-shadow: 0 0 50px 30px #fff;
+            transform: skewX(-20deg);
+        }
+        @keyframes sh02 { from { opacity: 0; left: 0%; } 50% { opacity: 1; } to { opacity: 0; left: 100%; } }
+        .glowing-button:active { box-shadow: 0 0 0 0 transparent; transition: box-shadow 0.2s ease-in; }
+        
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111;
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.5s ease-out, visibility 0.5s; opacity: 1; visibility: visible;
+        }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; }
+        .loading svg polyline { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+        .loading svg polyline#back { stroke: #2563eb33; }
+        .loading svg polyline#front { stroke: #2563eb; stroke-dasharray: 48, 144; stroke-dashoffset: 192; animation: dash_682 1.4s linear infinite; }
+        @keyframes dash_682 { 72.5% { opacity: 0; } to { stroke-dashoffset: 0; } }
+        
+        .shiny-text {
+            color: #ccc; background: linear-gradient(120deg, #ccc 40%, #fff 50%, #ccc 60%);
+            background-size: 200% 100%; -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent; display: inline-block; animation: shine 5s linear infinite;
+        }
+        @keyframes shine { 0% { background-position: 100%; } 100% { background-position: -100%; } }
+
+        .service-card { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .service-card.is-visible { opacity: 1; transform: translateY(0); }
+
+        .google-signin-button {
+            background-color: #fff; color: #444; border: 1px solid #ddd; border-radius: 8px; padding: 10px 24px;
+            font-weight: 500; font-size: 14px; transition: background-color 0.2s, box-shadow 0.2s; cursor: pointer;
+        }
+        .dark .google-signin-button { background-color: #424242; border-color: #555; color: #eee; }
+        .google-signin-button:hover { background-color: #f7f7f7; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .dark .google-signin-button:hover { background-color: #505050; }
+
+        .login-btn-uiverse {
+          outline: none; cursor: pointer; border: none; padding: 8px 16px; margin: 0;
+          font-family: inherit; font-size: 14px; position: relative; display: inline-block;
+          letter-spacing: 1.5px; font-weight: 600; border-radius: 500px; overflow: hidden;
+          background: #66ff66; color: ghostwhite; text-transform: uppercase;
+        }
+        .login-btn-uiverse span { position: relative; z-index: 10; transition: color 0.4s; }
+        .login-btn-uiverse:hover span { color: black; }
+        .login-btn-uiverse::before {
+          content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+          background: #000; width: 120%; left: -10%; transform: skew(30deg);
+          transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+        }
+        .login-btn-uiverse:hover::before { transform: translate3d(100%, 0, 0); }
+
+        .Btn {
+          display: flex; align-items: center; justify-content: flex-start;
+          width: 45px; height: 45px; border: none; border-radius: 50%;
+          cursor: pointer; position: relative; overflow: hidden;
+          transition-duration: .3s; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
+          background-color: rgb(255, 65, 65);
+        }
+        .sign { width: 100%; transition-duration: .3s; display: flex; align-items: center; justify-content: center; }
+        .sign svg { width: 17px; }
+        .sign svg path { fill: white; }
+        .text {
+          position: absolute; right: 0%; width: 0%; opacity: 0;
+          color: white; font-size: 1.2em; font-weight: 600; transition-duration: .3s;
+        }
+        .Btn:hover { width: 125px; border-radius: 40px; transition-duration: .3s; }
+        .Btn:hover .sign { width: 30%; transition-duration: .3s; padding-left: 20px; }
+        .Btn:hover .text { opacity: 1; width: 70%; transition-duration: .3s; padding-right: 10px; }
+        .Btn:active { transform: translate(2px ,2px); }
+
+        /* From Uiverse.io by bociKond */
+        .post-loader {
+         width: 44.8px;
+         height: 44.8px;
+         color: #554cb5;
+         position: relative;
+         background: radial-gradient(11.2px,currentColor 94%,#0000);
+        }
+
+        .post-loader:before {
+         content: '';
+         position: absolute;
+         inset: 0;
+         border-radius: 50%;
+         background: radial-gradient(10.08px at bottom right,#0000 94%,currentColor) top    left,
+               radial-gradient(10.08px at bottom left ,#0000 94%,currentColor) top    right,
+               radial-gradient(10.08px at top    right,#0000 94%,currentColor) bottom left,
+               radial-gradient(10.08px at top    left ,#0000 94%,currentColor) bottom right;
+         background-size: 22.4px 22.4px;
+         background-repeat: no-repeat;
+         animation: post-loader-anim 1.5s infinite cubic-bezier(0.3,1,0,1);
+        }
+
+        @keyframes post-loader-anim {
+         33% {
+           inset: -11.2px;
+           transform: rotate(0deg);
+         }
+
+         66% {
+           inset: -11.2px;
+           transform: rotate(90deg);
+         }
+
+         100% {
+           inset: 0;
+           transform: rotate(90deg);
+         }
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
+    
+    <div id="loader" class="loading-overlay">
+        <div class="loading">
+          <svg width="64px" height="48px">
+              <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="back"></polyline>
+            <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="front"></polyline>
+          </svg>
+        </div>
+    </div>
+    
+    <div id="login-loader-overlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-[10000]">
+        <div class="post-loader"></div>
+    </div>
+
+    <div id="app-container" style="visibility: hidden; opacity: 0; transition: opacity 0.5s ease-in;">
+        <header id="main-header" class="flex justify-between items-center px-8 py-4 shadow-sm bg-white dark:bg-gray-800 fixed top-0 left-0 right-0 z-50">
+             <!-- Header content will be dynamically updated -->
+        </header>
+
+        <main id="main-content">
+             <!-- Page content will be dynamically updated -->
+        </main>
+
+        <div id="modal-backdrop" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div id="modal-content" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 w-full max-w-sm relative animate-fade-in">
+                 <!-- Modal content will be injected here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loader = document.getElementById('loader');
+            const appContainer = document.getElementById('app-container');
+            const loginLoaderOverlay = document.getElementById('login-loader-overlay');
+            
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                appContainer.style.visibility = 'visible';
+                appContainer.style.opacity = '1';
+                initializeAppLogic();
+            }, 1500); 
+
+            function initializeAppLogic() {
+                const mainContent = document.getElementById('main-content');
+                const mainHeader = document.getElementById('main-header');
+                const modalBackdrop = document.getElementById('modal-backdrop');
+                const modalContent = document.getElementById('modal-content');
+                let currentUserProfile = null;
+
+                const landingPageHeader = `
+                    <div class="flex items-center space-x-2">
+                         <img src="https://placehold.co/40x40/2563eb/ffffff?text=HE" alt="Healthcare Eclipse Logo" class="w-10 h-10 rounded-full">
+                        <h1 class="text-xl font-bold">Healthcare Eclipse</h1>
+                    </div>
+                    <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                        <a href="#about" class="hover:text-blue-600 nav-link-underline dark:hover:text-blue-400">About</a>
+                        <a href="#services" class="hover:text-blue-600 nav-link-underline dark:hover:text-blue-400">Services</a>
+                        <a href="#features" class="hover:text-blue-600 nav-link-underline dark:hover:text-blue-400">Features</a>
+                        <a href="#contact" class="hover:text-blue-600 nav-link-underline dark:hover:text-blue-400">Contact</a>
+                    </nav>
+                    <div class="flex items-center space-x-4">
+                        <label class="switch"><input checked="true" id="theme-toggle" type="checkbox" /><span class="slider"><div class="star star_1"></div><div class="star star_2"></div><div class="star star_3"></div><svg viewBox="0 0 16 16" class="cloud_1 cloud"><path transform="matrix(.77976 0 0 .78395-299.99-418.63)" fill="#fff" d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"></path></svg></span></label>
+                        <div id="auth-buttons" class="space-x-3 flex items-center">
+                            <button id="login-btn" class="login-btn-uiverse"><span>Login</span></button>
+                            <button id="register-btn" class="glowing-button">Register</button>
+                        </div>
+                    </div>`;
+
+                 const landingPageTemplate = `
+                    <div id="landing-page-content">
+                        <section class="relative h-[70vh] flex flex-col items-center justify-center text-center mt-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop');">
+                            <div class="bg-black bg-opacity-60 absolute inset-0"></div>
+                            <div class="relative z-10 text-white max-w-2xl px-4">
+                                <h2 class="text-4xl md:text-5xl font-bold mb-4 shiny-text">Connecting Patients and Doctors Seamlessly</h2>
+                                <p class="text-lg mb-6 opacity-90">Healthcare Eclipse is your all-in-one platform for managing healthcare needs.</p>
+                                 <div class="loader-container my-4"><div class="loader"><p>Connecting</p><div class="words"><span class="word">patients</span><span class="word">doctors</span><span class="word">hospitals</span><span class="word">clinics</span><span class="word">patients</span></div></div></div>
+                            </div>
+                        </section>
+                        <section id="services" class="py-16 bg-gray-50 dark:bg-gray-900">
+                             <div class="max-w-6xl mx-auto text-center px-4">
+                                 <h3 class="text-3xl font-semibold mb-4">Our Services</h3>
+                                 <p class="text-gray-500 dark:text-gray-400 mb-12 max-w-2xl mx-auto">Healthcare Eclipse offers a range of services to meet all your healthcare needs.</p>
+                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                     <div class="service-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"><div class="text-blue-600 text-4xl mb-3">📅</div><h4 class="font-semibold text-lg mb-2">Appointment Booking</h4><p class="text-gray-500 dark:text-gray-400 text-sm">Schedule appointments effortlessly with trusted healthcare professionals.</p></div>
+                                     <div class="service-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"><div class="text-blue-600 text-4xl mb-3">💬</div><h4 class="font-semibold text-lg mb-2">Online Consultations</h4><p class="text-gray-500 dark:text-gray-400 text-sm">Connect virtually with doctors for instant medical advice and follow-ups.</p></div>
+                                     <div class="service-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"><div class="text-blue-600 text-4xl mb-3">⚕️</div><h4 class="font-semibold text-lg mb-2">Emergency Services</h4><p class="text-gray-500 dark:text-gray-400 text-sm">Access 24/7 emergency services and locate nearby hospitals in seconds.</p></div>
+                                     <div class="service-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"><div class="text-blue-600 text-4xl mb-3">📊</div><h4 class="font-semibold text-lg mb-2">Health Analytics</h4><p class="text-gray-500 dark:text-gray-400 text-sm">Track trends in your vitals and get AI-based predictions for silent diseases.</p></div>
+                                     <div class="service-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"><div class="text-blue-600 text-4xl mb-3">🧠</div><h4 class="font-semibold text-lg mb-2">AI Health Detective</h4><p class="text-gray-500 dark:text-gray-400 text-sm">Detect early symptoms of diabetes, thyroid, or hypertension with AI insights.</p></div>
+                                     <div class="service-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"><div class="text-blue-600 text-4xl mb-3">👨‍⚕️</div><h4 class="font-semibold text-lg mb-2">Doctor Dashboard</h4><p class="text-gray-500 dark:text-gray-400 text-sm">Enable doctors to visualize patterns, risks, and patient history instantly.</p></div>
+                                 </div>
+                             </div>
+                        </section>
+                        <footer id="contact" class="py-16 bg-gray-900 dark:bg-black text-gray-300">
+                             <div class="max-w-6xl mx-auto px-4">
+                                 <h4 class="text-2xl font-semibold mb-8 text-center text-white">Leadership Team</h4>
+                                 <div class="grid grid-cols-2 md:grid-cols-4 justify-center items-center gap-8 mb-12">
+                                     <div class="p-4 text-center"><h5 class="font-semibold text-white">Devansh Rajpoot</h5><p class="text-gray-400 text-sm">CEO & Founder</p></div>
+                                     <div class="p-4 text-center"><h5 class="font-semibold text-white">Piyush Dekate</h5><p class="text-gray-400 text-sm">Chief Technology Officer</p></div>
+                                     <div class="p-4 text-center"><h5 class="font-semibold text-white">Nupur Mehar</h5><p class="text-gray-400 text-sm">Head of Operations</p></div>
+                                     <div class="p-4 text-center"><h5 class="font-semibold text-white">Pragati Shelke</h5><p class="text-gray-400 text-sm">Chief Medical Advisor</p></div>
+                                 </div>
+                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left mt-8 border-t border-gray-700 pt-8">
+                                     <div><h5 class="text-white font-semibold mb-3">Quick Links</h5><ul class="space-y-2 text-gray-400 text-sm"><li><a href="#about" class="hover:text-white transition">About</a></li><li><a href="#services" class="hover:text-white transition">Services</a></li><li><a href="#" class="hover:text-white transition">Careers</a></li></ul></div>
+                                     <div><h5 class="text-white font-semibold mb-3">Contact Info</h5><p class="text-gray-400 text-sm">📍SIT,Nagpur,Maharastra India</p><p class="text-gray-400 text-sm">📧 devanshrajpoot2008@gmail.com</p><p class="text-gray-400 text-sm">📞 +91 90266 05300</p></div>
+                                     <div class="flex flex-col items-center md:items-start"><h5 class="text-white font-semibold mb-3">Follow Us</h5><ul class="wrapper"><li class="icon facebook"><span class="tooltip">Facebook</span><svg viewBox="0 0 320 512" xmlns="http://www.w3.org/2000/svg"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path></svg></li><li class="icon twitter"><span class="tooltip">Twitter</span><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429"></path></svg></li><li class="icon instagram"><span class="tooltip">Instagram</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"></path></svg></li></ul></div>
+                                 </div>
+                                 <p class="text-gray-500 text-sm mt-10 text-center">© 2025 Healthcare Eclipse. All rights reserved.</p>
+                             </div>
+                        </footer>
+                    </div>`;
+                
+                const getPatientDashboardTemplate = (user) => `
+                    <header class="bg-white dark:bg-gray-800 shadow-sm fixed top-0 left-0 right-0 z-50">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="flex justify-between items-center py-4">
+                                <div class="flex items-center space-x-4">
+                                    <h1 class="text-xl font-bold text-gray-900 dark:text-white">HealthConnect</h1>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="relative">
+                                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                        <input type="text" placeholder="Search" class="pl-10 pr-4 py-2 rounded-full border bg-gray-100 dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                                    </div>
+                                    <img src="https://placehold.co/40x40/7e22ce/ffffff?text=${user.firstName.charAt(0)}" alt="User Avatar" class="w-10 h-10 rounded-full">
+                                    <button id="logout-btn" class="Btn">
+                                        <div class="sign"><svg viewBox="0 0 512 512"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path></svg></div>
+                                        <div class="text">Logout</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div class="lg:col-span-2 space-y-8">
+                                <div>
+                                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Welcome back, ${user.firstName}!</h2>
+                                    <p class="text-gray-500 dark:text-gray-400 mt-1">Let's find the care you need.</p>
+                                </div>
+                                <div class="relative">
+                                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                    <input type="text" placeholder="Search for hospitals or clinics" class="w-full pl-12 pr-4 py-3 rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-4">
+                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Registered Hospitals/Clinics</h3>
+                                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm space-y-4">
+                                        <div class="border-b dark:border-gray-700 pb-4">
+                                            <h4 class="font-semibold">City General Hospital</h4>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">123 Main Street, Anytown</p>
+                                            <div class="flex items-center text-sm mt-2"><i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-current mr-1"></i> 4.8 (120 reviews)</div>
+                                            <div class="flex items-center text-sm text-green-600 dark:text-green-400 mt-1"><i data-lucide="calendar-check" class="w-4 h-4 mr-1"></i> Appointments available today</div>
+                                        </div>
+                                        <div class="border-b dark:border-gray-700 pb-4">
+                                            <h4 class="font-semibold">Community Health Clinic</h4>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">456 Oak Avenue, Anytown</p>
+                                            <div class="flex items-center text-sm mt-2"><i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-current mr-1"></i> 4.5 (88 reviews)</div>
+                                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-400 mt-1"><i data-lucide="calendar-clock" class="w-4 h-4 mr-1"></i> Next available: Tomorrow</div>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">Specialty Care Center</h4>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">789 Pine Lane, Anytown</p>
+                                            <div class="flex items-center text-sm mt-2"><i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-current mr-1"></i> 4.9 (210 reviews)</div>
+                                            <div class="flex items-center text-sm text-green-600 dark:text-green-400 mt-1"><i data-lucide="calendar-check" class="w-4 h-4 mr-1"></i> Appointments available today</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-8 pt-16">
+                                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                                    <h3 class="font-semibold mb-4">Your Appointment</h3>
+                                    <div class="flex items-center space-x-4">
+                                        <img src="https://placehold.co/60x60/e0e7ff/3730a3?text=H" class="rounded-lg" alt="Hospital">
+                                        <div>
+                                            <p class="font-semibold">City General Hospital</p>
+                                            <p class="text-sm text-yellow-600 dark:text-yellow-400">Status: In Progress</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Wait time: ~30 minutes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                                    <h3 class="font-semibold mb-4">Emergency Services</h3>
+                                    <button class="w-full bg-red-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 hover:bg-red-700 transition-colors">
+                                        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                                        <span>Emergency Appointment</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </main>`;
+
+                const getDoctorDashboardTemplate = (user) => `
+                    <div class="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+                        <aside class="w-64 bg-white dark:bg-gray-800 shadow-md flex-shrink-0">
+                            <div class="p-6">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://placehold.co/40x40/a78bfa/ffffff?text=D" alt="Doctor Avatar" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <p class="font-semibold text-gray-900 dark:text-white">Dr. ${user.lastName}</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Cardiology</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <nav class="mt-6">
+                                <a href="#" class="flex items-center px-6 py-3 text-blue-600 bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-600"><i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i><span class="font-medium">Dashboard</span></a>
+                                <a href="#" class="flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"><i data-lucide="calendar" class="w-5 h-5 mr-3"></i><span>Appointments</span></a>
+                                <a href="#" class="flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"><i data-lucide="users" class="w-5 h-5 mr-3"></i><span>Patients</span></a>
+                                <a href="#" class="flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Reviews</span></a>
+                                <a href="#" class="flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"><i data-lucide="user-circle" class="w-5 h-5 mr-3"></i><span>Profile</span></a>
+                                <div class="px-6 py-3 mt-8">
+                                    <button id="logout-btn-doctor" class="Btn">
+                                      <div class="sign"><svg viewBox="0 0 512 512"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path></svg></div>
+                                      <div class="text">Logout</div>
+                                    </button>
+                                </div>
+                            </nav>
+                        </aside>
+                        <div class="flex-1 flex flex-col">
+                             <header class="bg-white dark:bg-gray-800 shadow-sm p-4 flex justify-between items-center">
+                                <div>
+                                   <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+                                   <p class="text-sm text-gray-500 dark:text-gray-400">Manage your appointments and availability.</p>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <button class="flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md bg-white border border-gray-300 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"><i data-lucide="plus" class="w-4 h-4"></i><span>Add Offline Appointment</span></button>
+                                    <button class="flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700"><i data-lucide="refresh-cw" class="w-4 h-4"></i><span>Update Availability</span></button>
+                                </div>
+                            </header>
+                            <main class="flex-1 p-8">
+                                <h2 class="text-xl font-semibold mb-4">Upcoming Appointments</h2>
+                                <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+                                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700"><div class="flex space-x-4 text-sm font-medium"><button class="text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-2">Online</button><button class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">Offline</button></div></div>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-sm text-left">
+                                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"><tr><th class="px-6 py-3">Patient</th><th class="px-6 py-3">Date & Time</th><th class="px-6 py-3">Status</th><th class="px-6 py-3">Actions</th></tr></thead>
+                                            <tbody>
+                                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"><td class="px-6 py-4 font-medium">Ethan Carter</td><td class="px-6 py-4">July 15, 2024, 10:00 AM</td><td class="px-6 py-4"><span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Scheduled</span></td><td class="px-6 py-4"><a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Details</a></td></tr>
+                                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"><td class="px-6 py-4 font-medium">Olivia Bennett</td><td class="px-6 py-4">July 15, 2024, 2:00 PM</td><td class="px-6 py-4"><span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Scheduled</span></td><td class="px-6 py-4"><a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Details</a></td></tr>
+                                                <tr class="bg-white dark:bg-gray-800"><td class="px-6 py-4 font-medium">Noah Thompson</td><td class="px-6 py-4">July 16, 2024, 11:30 AM</td><td class="px-6 py-4"><span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Scheduled</span></td><td class="px-6 py-4"><a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Details</a></td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </main>
+                        </div>
+                    </div>`;
+
+                function showView(view, user = null) {
+                    if (view === 'landing') {
+                        mainHeader.innerHTML = landingPageHeader;
+                        mainContent.innerHTML = landingPageTemplate;
+                        mainHeader.className = "flex justify-between items-center px-8 py-4 shadow-sm bg-white dark:bg-gray-800 fixed top-0 left-0 right-0 z-50";
+                        addLandingPageEventListeners();
+                        addThemeToggleListener();
+                        const observer = new IntersectionObserver((entries) => {
+                            entries.forEach((entry) => {
+                                if (entry.isIntersecting) {
+                                    entry.target.classList.add('is-visible');
+                                    observer.unobserve(entry.target);
+                                }
+                            });
+                        }, { threshold: 0.1 });
+                        document.querySelectorAll('.service-card').forEach(card => observer.observe(card));
+                    } else if (view === 'patient' && user) {
+                        mainHeader.innerHTML = ''; mainHeader.className = '';
+                        mainContent.innerHTML = getPatientDashboardTemplate(user);
+                        addLogoutListener();
+                    } else if (view === 'doctor' && user) {
+                        mainHeader.innerHTML = ''; mainHeader.className = '';
+                        mainContent.innerHTML = getDoctorDashboardTemplate(user);
+                        addLogoutListener(true);
+                    }
+                    lucide.createIcons();
+                }
+                
+                function showModal(type, successMessage = null) {
+                    modalBackdrop.classList.remove('hidden');
+                    const successMessageHtml = successMessage ? `<p class="text-green-500 text-sm text-center mb-4">${successMessage}</p>` : '';
+                    let formHtml = '';
+                    if (type === 'login') {
+                        formHtml = `
+                            <h3 class="text-xl font-semibold mb-4 text-center">Login</h3> ${successMessageHtml}
+                            <form id="login-form" class="space-y-4">
+                                <p id="auth-error" class="text-red-500 text-sm text-center hidden"></p>
+                                <input type="email" name="email" placeholder="Email" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required />
+                                <input type="password" name="password" placeholder="Password" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required />
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Login</button>
+                            </form>
+                            <div class="my-4 flex items-center text-xs"><div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div><span class="mx-2 text-gray-500 dark:text-gray-400">OR</span><div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div></div>
+                            <button type="button" id="google-signin-btn" class="google-signin-button w-full flex items-center justify-center space-x-2"><svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v8.51h12.8c-.57 2.92-2.2 5.47-4.64 7.17l7.98 6.19c4.63-4.28 7.27-10.94 7.27-18.32z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.98-6.19c-2.11 1.45-4.82 2.3-7.91 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg><span>Sign in with Google</span></button>
+                            <p class="text-sm text-center text-gray-600 dark:text-gray-400 pt-4">Don't have an account? <span id="switch-to-register" class="text-blue-600 cursor-pointer hover:underline dark:text-blue-400">Register</span></p>
+                            <button id="close-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>`;
+                    } else {
+                        formHtml = `<h3 class="text-xl font-semibold mb-4 text-center">Register</h3><form id="register-form" class="space-y-4"><p id="auth-error" class="text-red-500 text-sm text-center hidden"></p><input type="text" name="firstName" placeholder="First Name" class="w-full border rounded-lg px-4 py-2" required /><input type="text" name="lastName" placeholder="Last Name" class="w-full border rounded-lg px-4 py-2" required /><input type="date" name="dob" class="w-full border rounded-lg px-4 py-2 text-gray-500" required /><input type="email" name="email" placeholder="Email" class="w-full border rounded-lg px-4 py-2" required /><input type="password" name="password" placeholder="Password" class="w-full border rounded-lg px-4 py-2" required /><div class="flex items-center justify-center space-x-4"><label>I am a:</label><input type="radio" id="patient" name="role" value="patient" checked><label for="patient">Patient</label><input type="radio" id="doctor" name="role" value="doctor"><label for="doctor">Doctor</label></div><button type="submit" class="glowing-button w-full">Register</button></form><div class="my-4 flex items-center text-xs"><div class="flex-grow border-t"></div><span class="mx-2">OR</span><div class="flex-grow border-t"></div></div><button type="button" id="google-signin-btn" class="google-signin-button w-full flex items-center justify-center space-x-2"><span>Sign up with Google</span></button><p class="text-sm text-center pt-4">Already have an account? <span id="switch-to-login" class="text-blue-600 cursor-pointer hover:underline">Login</span></p><button id="close-modal" class="absolute top-3 right-3 text-2xl">&times;</button>`;
+                    }
+                    modalContent.innerHTML = formHtml;
+                }
+
+                function closeModal() { modalBackdrop.classList.add('hidden'); modalContent.innerHTML = ''; }
+                function showAuthError(message) {
+                    const errorEl = document.getElementById('auth-error');
+                    if (errorEl) { errorEl.textContent = message; errorEl.classList.remove('hidden'); }
+                }
+
+                showView('landing');
+
+                function handleLogout() {
+                    sessionStorage.removeItem('currentUser');
+                    currentUserProfile = null;
+                    showView('landing');
+                }
+
+                function addLandingPageEventListeners() {
+                    document.getElementById('login-btn').addEventListener('click', () => showModal('login'));
+                    document.getElementById('register-btn').addEventListener('click', () => showModal('register'));
+                }
+                function addLogoutListener(isDoctor = false) {
+                    const btnId = isDoctor ? 'logout-btn-doctor' : 'logout-btn';
+                    const logoutBtn = document.getElementById(btnId);
+                    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+                }
+                function addThemeToggleListener() {
+                    const themeToggle = document.getElementById('theme-toggle');
+                     if(localStorage.getItem('theme') === 'dark') {
+                        document.documentElement.classList.add('dark');
+                        themeToggle.checked = false;
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        themeToggle.checked = true;
+                    }
+                    themeToggle.addEventListener('change', function() {
+                        if (this.checked) {
+                            document.documentElement.classList.remove('dark');
+                            localStorage.setItem('theme', 'light');
+                        } else {
+                            document.documentElement.classList.add('dark');
+                            localStorage.setItem('theme', 'dark');
+                        }
+                    });
+                }
+                
+                function handleSuccessfulLogin(user) {
+                    closeModal();
+                    loginLoaderOverlay.classList.remove('hidden');
+                    setTimeout(() => {
+                        loginLoaderOverlay.classList.add('hidden');
+                        currentUserProfile = user;
+                        sessionStorage.setItem('currentUser', JSON.stringify(user));
+                        showView(user.role, user);
+                    }, 1500);
+                }
+
+                document.body.addEventListener('click', e => {
+                    if (e.target === modalBackdrop || e.target.id === 'close-modal') closeModal();
+                    if (e.target.id === 'switch-to-register') showModal('register');
+                    if (e.target.id === 'switch-to-login') showModal('login');
+                    if (e.target.id === 'google-signin-btn' || e.target.closest('#google-signin-btn')) {
+                        const googleUser = { firstName: 'Google', lastName: 'User', email: 'google.user@example.com', role: 'patient' };
+                        handleSuccessfulLogin(googleUser);
+                    }
+                });
+                
+                document.body.addEventListener('submit', e => {
+                    e.preventDefault();
+                    if (e.target.id === 'login-form') {
+                        const email = e.target.email.value;
+                        const password = e.target.password.value;
+                        const users = JSON.parse(localStorage.getItem('healthcareUsers')) || [];
+                        const user = users.find(u => u.email === email && u.password === password);
+
+                        if (user) {
+                            handleSuccessfulLogin(user);
+                        } else {
+                            showAuthError("Invalid email or password.");
+                        }
+                    } else if (e.target.id === 'register-form') {
+                        const users = JSON.parse(localStorage.getItem('healthcareUsers')) || [];
+                        const newUser = {
+                            firstName: e.target.firstName.value, lastName: e.target.lastName.value,
+                            dob: e.target.dob.value, email: e.target.email.value, 
+                            password: e.target.password.value, role: e.target.role.value
+                        };
+
+                        if (users.find(u => u.email === newUser.email)) {
+                            showAuthError("A user with this email already exists.");
+                            return;
+                        }
+
+                        users.push(newUser);
+                        localStorage.setItem('healthcareUsers', JSON.stringify(users));
+                        
+                        closeModal();
+                        loginLoaderOverlay.classList.remove('hidden');
+                        setTimeout(() => {
+                           loginLoaderOverlay.classList.add('hidden');
+                           showModal('login', 'Registration successful! Please log in.');
+                        }, 1500);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Healthcare Eclipse - Home</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; margin:0; }
+.nav-link-underline { position: relative; }
+.nav-link-underline::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -3px; left: 0; background-color: #2563eb; transition: width 0.3s ease-in-out; }
+.nav-link-underline:hover::after { width: 100%; }
+
+@keyframes fadeInUp { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+.fade-in { opacity:0; animation: fadeInUp 1s ease-out forwards; }
+.hero-scale { transform: scale(0.95); animation: scaleUp 1s ease-out forwards; }
+@keyframes scaleUp { to {transform: scale(1);} }
+
+.wrapper { display: inline-flex; list-style: none; padding: 0; }
+.wrapper .icon { position: relative; background: #fff; border-radius: 50%; padding: 15px; margin: 10px; width: 50px; height: 50px; font-size: 18px; display: flex; justify-content: center; align-items: center; flex-direction: column; box-shadow: 0 10px 10px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.2s cubic-bezier(0.68,-0.55,0.265,1.55); }
+.wrapper .tooltip { position: absolute; top: 0; font-size: 14px; background: #fff; color: #fff; padding: 5px 8px; border-radius: 5px; box-shadow: 0 10px 10px rgba(0,0,0,0.1); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.68,-0.55,0.265,1.55); }
+.wrapper .icon:hover .tooltip { top: -45px; opacity: 1; visibility: visible; pointer-events: auto; }
+.wrapper .icon svg { width: 24px; height: 24px; fill: #333; transition: all 0.2s; }
+.wrapper .icon:hover svg { fill: #fff; }
+</style>
+</head>
+<body class="bg-white text-gray-800">
+
+<!-- Navbar -->
+<header class="flex justify-between items-center px-8 py-4 shadow-sm bg-white fixed top-0 left-0 right-0 z-50">
+  <div class="flex items-center space-x-2">
+      <img src="https://placehold.co/40x40/2563eb/ffffff?text=HE" alt="Logo" class="w-10 h-10 rounded-full">
+      <h1 class="text-xl font-bold">Healthcare Eclipse</h1>
+  </div>
+  <nav class="hidden md:flex space-x-8 text-sm font-medium">
+      <a href="index.html" class="hover:text-blue-600 nav-link-underline">Home</a>
+      <a href="about.html" class="hover:text-blue-600 nav-link-underline">About</a>
+      <a href="services.html" class="hover:text-blue-600 nav-link-underline">Services</a>
+      <a href="features.html" class="hover:text-blue-600 nav-link-underline">Features</a>
+      <a href="contact.html" class="hover:text-blue-600 nav-link-underline">Contact</a>
+  </nav>
+  <div class="space-x-3" id="auth-buttons">
+      <button id="login-btn" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-100">Login</button>
+      <button id="register-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">Register</button>
+  </div>
+  <div id="welcome-message" class="hidden font-medium text-blue-600"></div>
+</header>
+
+<!-- Hero Section -->
+<section class="relative bg-cover bg-center h-[70vh] flex flex-col items-center justify-center text-center mt-20 hero-scale" style="background-image: url('https://placehold.co/1920x1080/cccccc/ffffff?text=Hospital+Background');">
+  <div class="bg-black bg-opacity-50 absolute inset-0"></div>
+  <div class="relative z-10 text-white max-w-2xl px-4 fade-in">
+      <h2 class="text-4xl md:text-5xl font-bold mb-4">Connecting Patients and Doctors Seamlessly</h2>
+      <p class="text-lg mb-6 opacity-90">Healthcare Eclipse is your all-in-one platform for managing healthcare needs. Book appointments, consult with doctors online, and access emergency services with ease.</p>
+      <div class="space-x-3">
+          <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">For Doctors</button>
+          <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md">For Patients</button>
+      </div>
+  </div>
+</section>
+
+<!-- Mini Intro Section -->
+<section class="py-16 max-w-5xl mx-auto px-4 fade-in">
+  <h3 class="text-3xl font-semibold text-center mb-6">Your Health, Our Priority</h3>
+  <p class="text-gray-600 text-center">We combine technology with expert medical knowledge to provide the best healthcare services online. From appointment booking to AI health insights, your well-being is at the center of everything we do.</p>
+</section>
+
+<!-- Footer -->
+<footer class="py-16 bg-gray-900 text-gray-300 fade-in">
+  <div class="max-w-6xl mx-auto px-4 text-center">
+    <ul class="wrapper justify-center mb-6">
+        <li class="icon facebook"><span class="tooltip">Facebook</span><svg viewBox="0 0 320 512" xmlns="http://www.w3.org/2000/svg"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg></li>
+        <li class="icon twitter"><span class="tooltip">Twitter</span><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429"/></svg></li>
+        <li class="icon instagram"><span class="tooltip">Instagram</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.296-.048c.852-.04 1.433-.174 1.942-.372a3.906 3.906 0 0 0 1.417-.923 3.912 3.912 0 0 0 .923-1.417c.198-.51.333-1.09.372-1.942.038-.853.048-1.125.048-3.297s-.01-2.444-.048-3.296c-.04-.852-.174-1.433-.372-1.942a3.93 3.93 0 0 0-.923-1.417A3.927 3.927 0 0 0 13.238.42c-.51-.198-1.09-.333-1.942-.372C10.444.01 10.172 0 8 0zm0 3.881a4.119 4.119 0 1 1 0 8.238 4.119 4.119 0 0 1 0-8.238zm0 6.792a2.673 2.673 0 1 0 0-5.347 2.673 2.673 0 0 0 0 5.347zm4.406-6.99a.96.96 0 1 1-1.92 0 .96.96 0 0 1 1.92 0z"/></svg></li>
+    </ul>
+    <p class="text-gray-500 text-sm">© 2025 Healthcare Eclipse. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- Modal -->
+<div id="modal-backdrop" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+  <div id="modal-content" class="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm relative animate-fade-in"></div>
+</div>
+
+<script>
+// Same login/register modal logic as previous snippet
+document.addEventListener('DOMContentLoaded', function() {
+    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalContent = document.getElementById('modal-content');
+    const authButtons = document.getElementById('auth-buttons');
+    const welcomeMessage = document.getElementById('welcome-message');
+    let user = null;
+
+    function showModal(type) {
+        modalBackdrop.classList.remove('hidden');
+        let formHtml = '';
+        if(type==='login') {
+            formHtml = `
+            <h3 class="text-xl font-semibold mb-4 text-center">Login</h3>
+            <form id="login-form" class="space-y-4">
+                <input type="email" name="email" placeholder="Email" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                <input type="password" name="password" placeholder="Password" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Login</button>
+                <p class="text-sm text-center text-gray-600">Don't have an account? <span id="switch-to-register" class="text-blue-600 cursor-pointer hover:underline">Register</span></p>
+            </form>
+            <button id="close-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>`;
+        } else {
+            formHtml = `
+            <h3 class="text-xl font-semibold mb-4 text-center">Register</h3>
+            <form id="register-form" class="space-y-4">
+                <input type="text" name="firstName" placeholder="First Name" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                <input type="text" name="lastName" placeholder="Last Name" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                <input type="date" name="dob" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-500" required />
+                <input type="email" name="email" placeholder="Email" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                <input type="password" name="password" placeholder="Password" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Register</button>
+                <p class="text-sm text-center text-gray-600">Already have an account? <span id="switch-to-login" class="text-blue-600 cursor-pointer hover:underline">Login</span></p>
+            </form>
+            <button id="close-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>`;
+        }
+        modalContent.innerHTML = formHtml;
+    }
+    function closeModal() { modalBackdrop.classList.add('hidden'); modalContent.innerHTML=''; }
+    function updateUserUI(userData) { user=userData; if(user){authButtons.classList.add('hidden'); welcomeMessage.textContent=`Welcome, ${user.name||user.email}`; welcomeMessage.classList.remove('hidden');} }
+
+    loginBtn.addEventListener('click',()=>showModal('login'));
+    registerBtn.addEventListener('click',()=>showModal('register'));
+    modalBackdrop.addEventListener('click', e=>{ if(e.target===modalBackdrop) closeModal(); });
+    document.addEventListener('click', e=>{
+        if(e.target.id==='close-modal') closeModal();
+        if(e.target.id==='switch-to-register') showModal('register');
+        if(e.target.id==='switch-to-login') showModal('login');
+    });
+    document.addEventListener('submit', e=>{
+        e.preventDefault();
+        if(e.target.id==='login-form'){ const email=e.target.email.value; if(email){updateUserUI({email}); closeModal();}}
+        if(e.target.id==='register-form'){ const firstName=e.target.firstName.value; const email=e.target.email.value; if(firstName && email){updateUserUI({name:firstName,email}); closeModal();}}
+    });
+
+    // Animate sections
+    const sections = document.querySelectorAll('.fade-in');
+    sections.forEach((s,i)=>s.style.animationDelay=`${i*0.3}s`);
+});
+</script>
+
+</body>
+</html>
